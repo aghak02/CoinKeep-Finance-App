@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinKeep - Expense Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2C3E50;
+            color: #ECF0F1;
+            min-height: 100vh;
+        }
+
+        /* Splash Screen Styles */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2C3E50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #splash-screen h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #FFFFFF;
+            letter-spacing: 8px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #splash-screen .powered-by {
+            position: absolute;
+            bottom: 40px;
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #BDC3C7;
+        }
+
+        /* Main Dashboard Styles */
+        #dashboard {
+            display: none;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        #dashboard.show {
+            display: block;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #FFFFFF;
+            letter-spacing: 4px;
+        }
+
+        .header p {
+            color: #BDC3C7;
+            margin-top: 10px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: #34495E;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #3498DB;
+            border-bottom: 2px solid #3498DB;
+            padding-bottom: 10px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Table Styles */
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transactions-table th,
+        .transactions-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #4A6278;
+        }
+
+        .transactions-table th {
+            background-color: #2C3E50;
+            color: #3498DB;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .transactions-table tr:hover {
+            background-color: #3D566E;
+        }
+
+        .transactions-table td {
+            color: #ECF0F1;
+        }
+
+        .amount-expense {
+            color: #E74C3C;
+            font-weight: 600;
+        }
+
+        .amount-income {
+            color: #2ECC71;
+            font-weight: 600;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .category-food { background-color: #E74C3C; }
+        .category-transport { background-color: #3498DB; }
+        .category-entertainment { background-color: #9B59B6; }
+        .category-utilities { background-color: #F39C12; }
+        .category-shopping { background-color: #1ABC9C; }
+
+        /* Summary Stats */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: #34495E;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #BDC3C7;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .stat-card .value.income { color: #2ECC71; }
+        .stat-card .value.expense { color: #E74C3C; }
+        .stat-card .value.balance { color: #3498DB; }
+
+        @media (max-width: 600px) {
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            #splash-screen h1 {
+                font-size: 2.5rem;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <h1>COINKEEP</h1>
+        <p class="powered-by">Powered by SOMA</p>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard">
+        <div class="header">
+            <h1>COINKEEP</h1>
+            <p>Your Personal Expense Tracker</p>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-stats">
+            <div class="stat-card">
+                <h3>Total Income</h3>
+                <p class="value income">$5,200</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Expenses</h3>
+                <p class="value expense">$2,847</p>
+            </div>
+            <div class="stat-card">
+                <h3>Balance</h3>
+                <p class="value balance">$2,353</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Pie Chart Card -->
+            <div class="card">
+                <h2>Expense Breakdown</h2>
+                <div class="chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Card -->
+            <div class="card">
+                <h2>Recent Transactions</h2>
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                        <!-- Transactions will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample transaction data
+        const transactions = [
+            { date: '2024-03-15', description: 'Grocery Shopping', category: 'Food', amount: -125.50 },
+            { date: '2024-03-14', description: 'Uber Ride', category: 'Transport', amount: -28.00 },
+            { date: '2024-03-14', description: 'Netflix Subscription', category: 'Entertainment', amount: -15.99 },
+            { date: '2024-03-13', description: 'Electric Bill', category: 'Utilities', amount: -89.00 },
+            { date: '2024-03-12', description: 'New Headphones', category: 'Shopping', amount: -149.99 },
+            { date: '2024-03-11', description: 'Restaurant Dinner', category: 'Food', amount: -67.50 },
+        ];
+
+        // Expense data for pie chart
+        const expenseData = {
+            labels: ['Food', 'Transport', 'Entertainment', 'Utilities', 'Shopping'],
+            datasets: [{
+                data: [520, 340, 180, 290, 450],
+                backgroundColor: [
+                    '#E74C3C',
+                    '#3498DB',
+                    '#9B59B6',
+                    '#F39C12',
+                    '#1ABC9C'
+                ],
+                borderColor: '#34495E',
+                borderWidth: 3
+            }]
+        };
+
+        // Splash screen animation
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const splashScreen = document.getElementById('splash-screen');
+                const dashboard = document.getElementById('dashboard');
+                
+                splashScreen.classList.add('fade-out');
+                
+                setTimeout(function() {
+                    splashScreen.style.display = 'none';
+                    dashboard.classList.add('show');
+                    initChart();
+                    populateTransactions();
+                }, 500);
+            }, 2000);
+        });
+
+        // Initialize Pie Chart
+        function initChart() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: expenseData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ECF0F1',
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: $${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Populate transactions table
+        function populateTransactions() {
+            const tbody = document.getElementById('transactions-body');
+            
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                const categoryClass = 'category-' + transaction.category.toLowerCase();
+                const amountClass = transaction.amount < 0 ? 'amount-expense' : 'amount-income';
+                const amountDisplay = transaction.amount < 0 
+                    ? `-$${Math.abs(transaction.amount).toFixed(2)}` 
+                    : `+$${transaction.amount.toFixed(2)}`;
+                
+                row.innerHTML = `
+                    <td>${formatDate(transaction.date)}</td>
+                    <td>${transaction.description}</td>
+                    <td><span class="category-badge ${categoryClass}">${transaction.category}</span></td>
+                    <td class="${amountClass}">${amountDisplay}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Format date helper
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+    </script>
+</body>
+</html>
