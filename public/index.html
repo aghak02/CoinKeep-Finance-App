@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CoinKeep - Expense Tracker</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2C3E50">
+    <meta name="description" content="CoinKeep - Your Personal Expense Tracker. Track your monthly budget and expenses with ease.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CoinKeep">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -71,6 +81,7 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
         }
 
         .header h1 {
@@ -83,6 +94,63 @@
         .header p {
             color: #BDC3C7;
             margin-top: 10px;
+        }
+
+        /* Install App Button */
+        .install-btn-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .btn-install {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-install:hover {
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-install:active {
+            transform: translateY(0);
+        }
+
+        .btn-install.show {
+            display: flex;
+        }
+
+        .btn-install svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        @media (max-width: 600px) {
+            .install-btn-container {
+                position: static;
+                margin-bottom: 15px;
+            }
+            
+            .btn-install {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         /* Ad Banner - Jordan 360 */
@@ -580,6 +648,14 @@
     <!-- Main Dashboard -->
     <div id="dashboard">
         <div class="header">
+            <div class="install-btn-container">
+                <button type="button" class="btn-install" id="install-btn">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    Install App
+                </button>
+            </div>
             <h1>COINKEEP</h1>
             <p>Your Personal Expense Tracker</p>
         </div>
@@ -712,6 +788,50 @@
     </div>
 
     <script>
+        // PWA Install functionality
+        let deferredPrompt = null;
+        const installBtn = document.getElementById('install-btn');
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the default browser install prompt
+            e.preventDefault();
+            // Store the event for later use
+            deferredPrompt = e;
+            // Show the install button
+            installBtn.classList.add('show');
+        });
+
+        // Handle install button click
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                return;
+            }
+            
+            // Show the browser's install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user's response
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            // Clear the deferred prompt
+            deferredPrompt = null;
+            
+            // Hide the install button regardless of outcome
+            installBtn.classList.remove('show');
+        });
+
+        // Hide install button if app is already installed
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            installBtn.classList.remove('show');
+        });
+
+        // Check if app is running in standalone mode (already installed)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            installBtn.classList.remove('show');
+        }
+
         // Category colors mapping
         const categoryColors = {
             'Food': '#E74C3C',
