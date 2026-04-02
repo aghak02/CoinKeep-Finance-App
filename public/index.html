@@ -70,7 +70,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
@@ -83,6 +83,170 @@
         .header p {
             color: #BDC3C7;
             margin-top: 10px;
+        }
+
+        /* Ad Banner */
+        .ad-banner {
+            background-color: #3D566E;
+            border: 1px dashed #5D7A99;
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ad-banner-label {
+            font-size: 0.7rem;
+            color: #8A9FB5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: #2C3E50;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .ad-banner-content {
+            color: #BDC3C7;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .ad-banner-content a {
+            color: #3498DB;
+            text-decoration: none;
+        }
+
+        .ad-banner-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Budget Section */
+        .budget-section {
+            background: linear-gradient(135deg, #2980B9 0%, #3498DB 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .budget-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .budget-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .budget-input-group label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .budget-input-group input {
+            padding: 10px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            font-size: 1rem;
+            width: 150px;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .budget-input-group input:focus {
+            outline: none;
+            border-color: #FFFFFF;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .budget-input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-set-budget {
+            padding: 10px 20px;
+            background-color: #FFFFFF;
+            color: #2980B9;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-set-budget:hover {
+            background-color: #ECF0F1;
+        }
+
+        .btn-set-budget:active {
+            transform: scale(0.98);
+        }
+
+        .budget-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .budget-display {
+                grid-template-columns: 1fr;
+            }
+            .budget-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .budget-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .budget-item-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .budget-item-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        .budget-item-value.positive {
+            color: #2ECC71;
+        }
+
+        .budget-item-value.negative {
+            color: #E74C3C;
+        }
+
+        .budget-item-value.warning {
+            color: #F39C12;
         }
 
         .dashboard-grid {
@@ -308,6 +472,20 @@
             overflow-y: auto;
         }
 
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #4A6278;
+        }
+
+        .footer .powered-by {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #8A9FB5;
+        }
+
         @media (max-width: 600px) {
             .summary-stats {
                 grid-template-columns: 1fr;
@@ -332,6 +510,40 @@
         <div class="header">
             <h1>COINKEEP</h1>
             <p>Your Personal Expense Tracker</p>
+        </div>
+
+        <!-- Ad Banner -->
+        <div class="ad-banner">
+            <span class="ad-banner-label">Promotions</span>
+            <div class="ad-banner-content">
+                Your ad could be here! <a href="#">Contact us for advertising opportunities</a>
+            </div>
+        </div>
+
+        <!-- Budget Section -->
+        <div class="budget-section">
+            <div class="budget-header">
+                <span class="budget-title">Monthly Budget Tracker</span>
+                <div class="budget-input-group">
+                    <label for="monthly-salary">Monthly Salary:</label>
+                    <input type="number" id="monthly-salary" placeholder="Enter salary" min="0" step="0.01">
+                    <button type="button" class="btn-set-budget" id="set-budget-btn">Set Budget</button>
+                </div>
+            </div>
+            <div class="budget-display">
+                <div class="budget-item">
+                    <div class="budget-item-label">Initial Budget</div>
+                    <div class="budget-item-value" id="initial-budget">$0.00</div>
+                </div>
+                <div class="budget-item">
+                    <div class="budget-item-label">Total Spent</div>
+                    <div class="budget-item-value negative" id="total-spent">$0.00</div>
+                </div>
+                <div class="budget-item">
+                    <div class="budget-item-label">Remaining Balance</div>
+                    <div class="budget-item-value positive" id="remaining-balance">$0.00</div>
+                </div>
+            </div>
         </div>
 
         <!-- Add Expense Form -->
@@ -414,6 +626,11 @@
                 <button type="button" class="btn-clear" id="clear-btn" style="display: none;">Clear All Data</button>
             </div>
         </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="powered-by">Powered by SOMA</p>
+        </div>
     </div>
 
     <script>
@@ -429,15 +646,24 @@
         // Chart instance
         let expenseChart = null;
 
-        // Load data from LocalStorage or use empty array
+        // Load data from LocalStorage
         function loadExpenses() {
             const saved = localStorage.getItem('coinkeep_expenses');
             return saved ? JSON.parse(saved) : [];
         }
 
+        function loadBudget() {
+            const saved = localStorage.getItem('coinkeep_budget');
+            return saved ? parseFloat(saved) : 0;
+        }
+
         // Save data to LocalStorage
         function saveExpenses(expenses) {
             localStorage.setItem('coinkeep_expenses', JSON.stringify(expenses));
+        }
+
+        function saveBudget(budget) {
+            localStorage.setItem('coinkeep_budget', budget.toString());
         }
 
         // Calculate totals by category
@@ -457,6 +683,33 @@
             });
             
             return totals;
+        }
+
+        // Update budget display
+        function updateBudgetDisplay() {
+            const budget = loadBudget();
+            const expenses = loadExpenses();
+            const totalSpent = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+            const remaining = budget - totalSpent;
+
+            document.getElementById('initial-budget').textContent = `$${budget.toFixed(2)}`;
+            document.getElementById('total-spent').textContent = `$${totalSpent.toFixed(2)}`;
+            
+            const remainingEl = document.getElementById('remaining-balance');
+            remainingEl.textContent = `$${remaining.toFixed(2)}`;
+            
+            // Update color based on remaining balance
+            remainingEl.classList.remove('positive', 'negative', 'warning');
+            if (remaining < 0) {
+                remainingEl.classList.add('negative');
+            } else if (remaining < budget * 0.2) {
+                remainingEl.classList.add('warning');
+            } else {
+                remainingEl.classList.add('positive');
+            }
+
+            // Update salary input field with saved value
+            document.getElementById('monthly-salary').value = budget > 0 ? budget : '';
         }
 
         // Initialize or update the Pie Chart
@@ -605,7 +858,30 @@
             updateChart(expenses);
             updateTransactionsTable(expenses);
             updateSummary(expenses);
+            updateBudgetDisplay();
         }
+
+        // Handle budget form
+        document.getElementById('set-budget-btn').addEventListener('click', function() {
+            const salaryInput = document.getElementById('monthly-salary');
+            const salary = parseFloat(salaryInput.value);
+            
+            if (isNaN(salary) || salary < 0) {
+                alert('Please enter a valid salary amount.');
+                return;
+            }
+            
+            saveBudget(salary);
+            updateBudgetDisplay();
+        });
+
+        // Allow pressing Enter to set budget
+        document.getElementById('monthly-salary').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('set-budget-btn').click();
+            }
+        });
 
         // Handle form submission
         document.getElementById('expense-form').addEventListener('submit', function(e) {
@@ -640,7 +916,7 @@
 
         // Handle clear all data
         document.getElementById('clear-btn').addEventListener('click', function() {
-            if (confirm('Are you sure you want to clear all expense data?')) {
+            if (confirm('Are you sure you want to clear all expense data? Your budget will be preserved.')) {
                 localStorage.removeItem('coinkeep_expenses');
                 refreshUI();
             }
