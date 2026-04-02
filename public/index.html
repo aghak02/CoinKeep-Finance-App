@@ -85,42 +85,114 @@
             margin-top: 10px;
         }
 
-        /* Ad Banner */
+        /* Ad Banner - Jordan 360 */
         .ad-banner {
-            background-color: #3D566E;
-            border: 1px dashed #5D7A99;
-            border-radius: 8px;
-            padding: 12px 20px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(194, 107, 68, 0.9) 0%, rgba(139, 69, 42, 0.95) 100%);
+            border-radius: 12px;
+            padding: 0;
             margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 200, 150, 0.2);
+        }
+
+        .ad-banner-inner {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            padding: 20px 30px;
+            background: url('https://images.unsplash.com/photo-1579606032821-4e6161c81571?w=1200&q=80') center/cover no-repeat;
+            position: relative;
+        }
+
+        .ad-banner-inner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(139, 69, 42, 0.92) 0%, rgba(139, 69, 42, 0.75) 50%, rgba(139, 69, 42, 0.6) 100%);
+            z-index: 1;
         }
 
         .ad-banner-label {
-            font-size: 0.7rem;
-            color: #8A9FB5;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.7);
             text-transform: uppercase;
             letter-spacing: 1px;
-            background-color: #2C3E50;
+            background-color: rgba(0, 0, 0, 0.3);
             padding: 3px 8px;
             border-radius: 4px;
+            z-index: 3;
         }
 
         .ad-banner-content {
-            color: #BDC3C7;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .ad-banner-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .ad-banner-tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .ad-banner-cta {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-discover {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #E8A87C 0%, #D4956A 100%);
+            color: #3D2314;
             font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .ad-banner-content a {
-            color: #3498DB;
+            font-weight: 700;
             text-decoration: none;
+            border-radius: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .ad-banner-content a:hover {
-            text-decoration: underline;
+        .btn-discover:hover {
+            background: linear-gradient(135deg, #F0B88C 0%, #E8A87C 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-discover:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .ad-banner-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                padding: 25px 20px;
+            }
+            
+            .ad-banner-inner::before {
+                background: linear-gradient(180deg, rgba(139, 69, 42, 0.92) 0%, rgba(139, 69, 42, 0.8) 100%);
+            }
         }
 
         /* Budget Section */
@@ -512,11 +584,17 @@
             <p>Your Personal Expense Tracker</p>
         </div>
 
-        <!-- Ad Banner -->
+        <!-- Ad Banner - Jordan 360 -->
         <div class="ad-banner">
             <span class="ad-banner-label">Promotions</span>
-            <div class="ad-banner-content">
-                Your ad could be here! <a href="#">Contact us for advertising opportunities</a>
+            <div class="ad-banner-inner">
+                <div class="ad-banner-content">
+                    <div class="ad-banner-logo">Jordan 360</div>
+                    <div class="ad-banner-tagline">Explore Jordan's Hidden Gems with Jordan 360!</div>
+                </div>
+                <div class="ad-banner-cta">
+                    <a href="https://jordan-360-web-app.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-discover">Discover Now</a>
+                </div>
             </div>
         </div>
 
