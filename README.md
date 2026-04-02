@@ -1,35 +1,25 @@
-# v0-coin-keep-web-app
+💰 CoinKeep - Smart Finance Manager
+Developed by SOMA
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+CoinKeep is a modern, responsive web application designed to help users track their income, manage expenses, and visualize their financial health in real-time.
 
-## Built with v0
+✨ Features
+Interactive Dashboard: Real-time balance calculation.
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+Expense Tracking: Categorize and monitor your spending.
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_t4iOHZGg5mvJqApwTXpoKEfccQ9l)
+Cross-App Promotion: Integrated ad space for the Jordan 360 tourism app.
 
-## Getting Started
+PWA Ready: Installable on mobile devices for a native app experience.
 
-First, run the development server:
+🛠️ Technologies Used
+Next.js (React Framework)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+Tailwind CSS (Styling)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Lucide React (Icons)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🔒 Security Notice
+Built with a focus on data privacy and local storage security, ensuring user financial data remains private on their device.
 
-## Learn More
-
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
-
-<a href="https://v0.app/chat/api/kiro/clone/aghak02/v0-coin-keep-web-app" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>
+© 2026 Soma Apps | Cybersecurity Student @ BAU
