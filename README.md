@@ -22,4 +22,4 @@ Lucide React (Icons)
 🔒 Security Notice
 Built with a focus on data privacy and local storage security, ensuring user financial data remains private on their device.
 
-© 2026 Soma Apps | Cybersecurity Student @ BAU
+© 2026 Soma Apps 
