@@ -8,7 +8,6 @@ Interactive Dashboard: Real-time balance calculation.
 
 Expense Tracking: Categorize and monitor your spending.
 
-Cross-App Promotion: Integrated ad space for the Jordan 360 tourism app.
 
 PWA Ready: Installable on mobile devices for a native app experience.
 
