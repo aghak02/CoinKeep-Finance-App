@@ -32,7 +32,7 @@ export default function CoinKeepDashboard() {
     setAmtInput(''); setDescInput('')
   }
 
-  // حسابات الـ Chart اليدوية (SVG) لضمان النجاح 100%
+
   const categories = ['Food', 'Transport', 'Utilities', 'Shopping']
   const colors = ['#E74C3C', '#3498DB', '#F1C40F', '#1ABC9C']
   const totals = categories.map(cat => expenses.filter(e => e.cat === cat).reduce((sum, e) => sum + e.amt, 0))
@@ -65,7 +65,7 @@ export default function CoinKeepDashboard() {
 
       <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
-        {/* SVG CHART - الـ Chart اللي مستحيل تخرب */}
+       
         <div style={{ background: '#2C3E50', padding: '30px', borderRadius: '20px', textAlign: 'center' }}>
           <h3 style={{fontSize: '0.9rem', color: '#3498DB', marginBottom: '15px'}}>EXPENSE DISTRIBUTION</h3>
           <div style={{ position: 'relative', width: '200px', height: '200px', margin: '0 auto' }}>
