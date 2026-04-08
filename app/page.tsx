@@ -99,7 +99,7 @@ export default function CoinKeepDashboard() {
       </div>
 
       <footer style={{ textAlign: 'center', marginTop: '40px', fontSize: '0.8rem', color: '#85929E' }}>
-        <p>Engineered by <strong>SOMA (DEV Agency)</strong></p>
+        <p>Engineered by <strong>SOMA </strong></p>
       </footer>
     </div>
   )
