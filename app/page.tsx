@@ -14,7 +14,7 @@ export default function CoinKeepDashboard() {
   const chartRef = useRef<HTMLCanvasElement>(null)
   const chartInstance = useRef<Chart | null>(null)
 
-  // Load data
+  // Load data from localStorage
   useEffect(() => {
     const savedExp = localStorage.getItem('coinkeep_exp')
     const savedSal = localStorage.getItem('coinkeep_salary')
@@ -31,7 +31,7 @@ export default function CoinKeepDashboard() {
         chartInstance.current.destroy()
       }
 
-      const categories = ['Food', 'Transport', 'Utilities', 'Shopping']
+      const categories = ['Food', 'Transport', 'Utilities', 'Shopping', 'Entertainment']
       const data = categories.map(cat => 
         expenses.filter(e => e.cat === cat).reduce((sum, e) => sum + e.amt, 0)
       )
@@ -44,16 +44,22 @@ export default function CoinKeepDashboard() {
             labels: categories,
             datasets: [{
               data: data,
-              backgroundColor: ['#E74C3C', '#3498DB', '#F1C40F', '#1ABC9C'],
-              borderWidth: 0,
+              backgroundColor: ['#E74C3C', '#3498DB', '#F1C40F', '#1ABC9C', '#9B59B6'],
+              borderWidth: 2,
+              borderColor: '#2C3E50',
               hoverOffset: 10
             }]
           },
           options: {
             plugins: {
-              legend: { position: 'bottom', labels: { color: '#ECF0F1', font: { size: 12 } } }
+              legend: { 
+                position: 'bottom', 
+                labels: { color: '#ECF0F1', font: { size: 12, family: 'sans-serif' }, padding: 20 } 
+              }
             },
-            cutout: '70%'
+            cutout: '70%',
+            responsive: true,
+            maintainAspectRatio: false
           }
         })
       }
@@ -86,67 +92,76 @@ export default function CoinKeepDashboard() {
 
   return (
     <div style={{ backgroundColor: '#1A252F', color: '#ECF0F1', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' }}>
+      <style>{`
+        input::placeholder { color: #85929E; }
+        select { cursor: pointer; }
+      `}</style>
+
       <header style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ color: '#D4AF37', letterSpacing: '4px', fontSize: '2.5rem' }}>COINKEEP</h1>
+        <h1 style={{ color: '#D4AF37', letterSpacing: '4px', fontSize: '2.2rem', fontWeight: 'bold' }}>COINKEEP</h1>
         <p style={{ color: '#85929E', fontSize: '0.9rem' }}>Engineered by SOMA - DEV Agency</p>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
         {/* Chart Card */}
-        <div style={{ background: '#2C3E50', padding: '25px', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-          <h2 style={{ fontSize: '1.2rem', marginBottom: '20px', color: '#3498DB' }}>Expense Analytics</h2>
-          <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+        <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1rem', color: '#3498DB', marginBottom: '15px', textTransform: 'uppercase' }}>Expense Analytics</h2>
+          <div style={{ height: '250px', position: 'relative' }}>
             <canvas ref={chartRef}></canvas>
           </div>
         </div>
 
-        {/* Budget Summary */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', background: '#2C3E50', padding: '20px', borderRadius: '15px' }}>
-          <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'space-between', marginBottom: '15px', borderBottom: '1px solid #34495E', paddingBottom: '15px' }}>
-             <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#BDC3C7' }}>INCOME</span>
-                <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>{totalIncome.toFixed(2)}</div>
-             </div>
-             <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#BDC3C7' }}>SPENT</span>
-                <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#E74C3C' }}>{totalSpent.toFixed(2)}</div>
-             </div>
-             <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#BDC3C7' }}>BALANCE</span>
-                <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#2ECC71' }}>{balance.toFixed(2)}</div>
-             </div>
+        {/* Financial Summary */}
+        <div style={{ background: 'linear-gradient(135deg, #2C3E50 0%, #1A252F 100%)', padding: '20px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', color: '#BDC3C7' }}>Monthly Salary (JD)</label>
+              <input type="number" value={salary || ''} onChange={(e) => updateIncome(e.target.value, 'salary')} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: '#34495E', color: 'white', marginTop: '5px' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', color: '#BDC3C7' }}>Extra Income (JD)</label>
+              <input type="number" value={extraIncome || ''} onChange={(e) => updateIncome(e.target.value, 'extra')} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: '#34495E', color: 'white', marginTop: '5px' }} />
+            </div>
           </div>
-          
-          <div>
-            <label style={{ fontSize: '0.7rem', color: '#BDC3C7' }}>Monthly Salary</label>
-            <input type="number" value={salary || ''} onChange={(e) => updateIncome(e.target.value, 'salary')} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', background: '#1A252F', color: 'white' }} />
-          </div>
-          <div>
-            <label style={{ fontSize: '0.7rem', color: '#BDC3C7' }}>Extra Income</label>
-            <input type="number" value={extraIncome || ''} onChange={(e) => updateIncome(e.target.value, 'extra')} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', background: '#1A252F', color: 'white' }} />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #34495E', paddingTop: '15px', textAlign: 'center' }}>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#BDC3C7' }}>INCOME</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{totalIncome.toFixed(2)}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#BDC3C7' }}>SPENT</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#E74C3C' }}>{totalSpent.toFixed(2)}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#BDC3C7' }}>BALANCE</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#2ECC71' }}>{balance.toFixed(2)}</div>
+            </div>
           </div>
         </div>
 
-        {/* Add Expense */}
-        <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '15px' }}>
-          <h2 style={{ fontSize: '1.1rem', color: '#3498DB', marginBottom: '15px' }}>New Transaction</h2>
+        {/* Transaction Form */}
+        <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+          <h2 style={{ fontSize: '1rem', color: '#3498DB', marginBottom: '15px' }}>ADD TRANSACTION</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <select value={catInput} onChange={(e) => setCatInput(e.target.value)} style={{ padding: '12px', borderRadius: '8px', background: '#1A252F', color: 'white', border: 'none' }}>
+            <select value={catInput} onChange={(e) => setCatInput(e.target.value)} style={{ padding: '12px', borderRadius: '10px', background: '#34495E', color: 'white', border: 'none' }}>
               <option>Food</option>
               <option>Transport</option>
               <option>Utilities</option>
               <option>Shopping</option>
+              <option>Entertainment</option>
             </select>
-            <input type="number" placeholder="Amount (JD)" value={amtInput} onChange={(e) => setAmtInput(e.target.value)} style={{ padding: '12px', borderRadius: '8px', background: '#1A252F', color: 'white', border: 'none' }} />
-            <input type="text" placeholder="What did you buy?" value={descInput} onChange={(e) => setDescInput(e.target.value)} style={{ padding: '12px', borderRadius: '8px', background: '#1A252F', color: 'white', border: 'none' }} />
-            <button onClick={addExpense} style={{ padding: '15px', background: '#3498DB', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}>Record Expense</button>
+            <input type="number" placeholder="Amount (JD)" value={amtInput} onChange={(e) => setAmtInput(e.target.value)} style={{ padding: '12px', borderRadius: '10px', background: '#34495E', color: 'white', border: 'none' }} />
+            <input type="text" placeholder="Description" value={descInput} onChange={(e) => setDescInput(e.target.value)} style={{ padding: '12px', borderRadius: '10px', background: '#34495E', color: 'white', border: 'none' }} />
+            <button onClick={addExpense} style={{ padding: '15px', background: '#D4AF37', color: '#1A252F', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}>RECORD EXPENSE</button>
           </div>
         </div>
+
       </div>
 
-      <footer style={{ textAlign: 'center', marginTop: '40px', fontSize: '0.8rem', color: '#85929E' }}>
-        <p>&copy; 2026 CoinKeep | Verified by <strong>DEV Agency</strong></p>
+      <footer style={{ textAlign: 'center', marginTop: '40px', fontSize: '0.75rem', color: '#85929E' }}>
+        <p>Licensed to <strong>DEV Agency Jordan</strong> | &copy; 2026</p>
       </footer>
     </div>
   )
