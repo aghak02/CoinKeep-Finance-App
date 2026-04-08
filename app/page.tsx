@@ -12,46 +12,17 @@ export default function CoinKeepDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // تحميل البيانات
-    const savedExp = localStorage.getItem('coinkeep_exp')
-    const savedSal = localStorage.getItem('coinkeep_salary')
-    const savedExtra = localStorage.getItem('coinkeep_extra')
-    if (savedExp) setExpenses(JSON.parse(savedExp))
-    if (savedSal) setSalary(parseFloat(savedSal))
-    if (savedExtra) setExtraIncome(parseFloat(savedExtra))
-
-    // شاشة التحميل (Splash Screen) لمدة ثانيتين
+    if (typeof window !== 'undefined') {
+      const savedExp = localStorage.getItem('coinkeep_exp')
+      const savedSal = localStorage.getItem('coinkeep_salary')
+      const savedExtra = localStorage.getItem('coinkeep_extra')
+      if (savedExp) setExpenses(JSON.parse(savedExp))
+      if (savedSal) setSalary(parseFloat(savedSal))
+      if (savedExtra) setExtraIncome(parseFloat(savedExtra))
+    }
     const timer = setTimeout(() => setLoading(false), 2000)
-
-    // تحميل مكتبة الـ Chart
-    const script = document.createElement('script')
-    script.src = "https://cdn.jsdelivr.net/npm/chart.js"
-    script.async = true
-    script.onload = () => renderChart()
-    document.body.appendChild(script)
-
     return () => clearTimeout(timer)
   }, [])
-
-  useEffect(() => { if(!loading) renderChart() }, [expenses, loading])
-
-  const renderChart = () => {
-    const win = window as any
-    if (!win.Chart) return
-    const ctx = document.getElementById('myChart') as HTMLCanvasElement
-    if (!ctx) return
-    if (win.myChartInstance) win.myChartInstance.destroy()
-    const categories = ['Food', 'Transport', 'Utilities', 'Shopping']
-    const data = categories.map(cat => expenses.filter(e => e.cat === cat).reduce((sum, e) => sum + e.amt, 0))
-    win.myChartInstance = new win.Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: categories,
-        datasets: [{ data, backgroundColor: ['#E74C3C', '#3498DB', '#F1C40F', '#1ABC9C'], borderWidth: 0 }]
-      },
-      options: { plugins: { legend: { position: 'bottom', labels: { color: '#ECF0F1' } } }, cutout: '70%' }
-    })
-  }
 
   const addExpense = () => {
     if (!amtInput || !descInput) return
@@ -61,7 +32,21 @@ export default function CoinKeepDashboard() {
     setAmtInput(''); setDescInput('')
   }
 
-  // شاشة الـ Splash Screen الملكية
+  // حسابات الـ Chart اليدوية (SVG) لضمان النجاح 100%
+  const categories = ['Food', 'Transport', 'Utilities', 'Shopping']
+  const colors = ['#E74C3C', '#3498DB', '#F1C40F', '#1ABC9C']
+  const totals = categories.map(cat => expenses.filter(e => e.cat === cat).reduce((sum, e) => sum + e.amt, 0))
+  const totalSpent = totals.reduce((a, b) => a + b, 0)
+  
+  let cumulativePercent = 0
+  const chartSlices = totals.map((amt, i) => {
+    if (totalSpent === 0) return null
+    const percent = (amt / totalSpent) * 100
+    const start = cumulativePercent
+    cumulativePercent += percent
+    return { start, end: cumulativePercent, color: colors[i], label: categories[i] }
+  })
+
   if (loading) {
     return (
       <div style={{ backgroundColor: '#1A252F', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -75,36 +60,88 @@ export default function CoinKeepDashboard() {
     <div style={{ backgroundColor: '#1A252F', color: '#ECF0F1', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' }}>
       <header style={{ textAlign: 'center', marginBottom: '20px' }}>
         <h1 style={{ color: '#D4AF37', letterSpacing: '4px' }}>COINKEEP</h1>
-        <p style={{ color: '#85929E', fontSize: '0.9rem', fontWeight: 'bold' }}>POWERED BY SOMA</p>
+        <p style={{ color: '#85929E', fontSize: '0.8rem', fontWeight: 'bold' }}>POWERED BY SOMA</p>
       </header>
 
       <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
-        {/* Chart Section */}
-        <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-          <canvas id="myChart" style={{ maxHeight: '200px' }}></canvas>
+        {/* SVG CHART - الـ Chart اللي مستحيل تخرب */}
+        <div style={{ background: '#2C3E50', padding: '30px', borderRadius: '20px', textAlign: 'center' }}>
+          <h3 style={{fontSize: '0.9rem', color: '#3498DB', marginBottom: '15px'}}>EXPENSE DISTRIBUTION</h3>
+          <div style={{ position: 'relative', width: '200px', height: '200px', margin: '0 auto' }}>
+            <svg viewBox="0 0 32 32" style={{ transform: 'rotate(-90deg)', borderRadius: '50%' }}>
+              {totalSpent === 0 ? (
+                <circle cx="16" cy="16" r="16" fill="#34495E" />
+              ) : (
+                chartSlices.map((slice, i) => slice && (
+                  <circle key={i} cx="16" cy="16" r="16" fill="transparent" stroke={slice.color} strokeWidth="32" strokeDasharray={`${slice.end - slice.start} 100`} strokeDashoffset={-slice.start} />
+                ))
+              )}
+              <circle cx="16" cy="16" r="10" fill="#2C3E50" />
+            </svg>
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.6rem', color: '#85929E' }}>TOTAL</div>
+              <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>{totalSpent.toFixed(0)}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
+            {categories.map((cat, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.7rem' }}>
+                <div style={{ width: '10px', height: '10px', backgroundColor: colors[i], borderRadius: '2px' }}></div>
+                <span>{cat}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Financials */}
         <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '15px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
-            <div className="input-group">
-                <label style={{fontSize: '0.7rem', color: '#85929E'}}>SALARY</label>
-                <input type="number" placeholder="Salary" value={salary || ''} onChange={(e) => {setSalary(parseFloat(e.target.value)); localStorage.setItem('coinkeep_salary', e.target.value)}} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: '#34495E', color: 'white' }} />
-            </div>
-            <div className="input-group">
-                <label style={{fontSize: '0.7rem', color: '#85929E'}}>EXTRA INCOME</label>
-                <input type="number" placeholder="Extra" value={extraIncome || ''} onChange={(e) => {setExtraIncome(parseFloat(e.target.value)); localStorage.setItem('coinkeep_extra', e.target.value)}} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: '#34495E', color: 'white' }} />
-            </div>
+            <input type="number" placeholder="Salary" value={salary || ''} onChange={(e) => {setSalary(parseFloat(e.target.value)); localStorage.setItem('coinkeep_salary', e.target.value)}} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: '#34495E', color: 'white' }} />
+            <input type="number" placeholder="Extra" value={extraIncome || ''} onChange={(e) => {setExtraIncome(parseFloat(e.target.value)); localStorage.setItem('coinkeep_extra', e.target.value)}} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: '#34495E', color: 'white' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
-            <div><div style={{ fontSize: '0.7rem' }}>BALANCE</div><div style={{ color: '#2ECC71', fontWeight: 'bold' }}>JD {(salary + extraIncome - expenses.reduce((s,e)=>s+e.amt,0)).toFixed(2)}</div></div>
-            <div><div style={{ fontSize: '0.7rem' }}>SPENT</div><div style={{ color: '#E74C3C', fontWeight: 'bold' }}>JD {expenses.reduce((s,e)=>s+e.amt,0).toFixed(2)}</div></div>
+            <div><div style={{ fontSize: '0.7rem' }}>BALANCE</div><div style={{ color: '#2ECC71', fontWeight: 'bold' }}>JD {(salary + extraIncome - totalSpent).toFixed(2)}</div></div>
+            <div><div style={{ fontSize: '0.7rem' }}>SPENT</div><div style={{ color: '#E74C3C', fontWeight: 'bold' }}>JD {totalSpent.toFixed(2)}</div></div>
           </div>
         </div>
 
-        {/* Add Expense */}
+        {/* Add Section */}
         <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '15px' }}>
-          <select value={catInput} onChange={(e) => setCatInput(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px' }}>
-            <option>Food</option><option>Transport</option><option>Utilities</option><option>Shopping</option>
-          </select
+          <select value={catInput} onChange={(e) => setCatInput(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', background: '#34495E', color: 'white' }}>
+            {categories.map(c => <option key={c}>{c}</option>)}
+          </select>
+          <input type="number" placeholder="Amount" value={amtInput} onChange={(e) => setAmtInput(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', background: '#34495E', color: 'white' }} />
+          <input type="text" placeholder="Description" value={descInput} onChange={(e) => setDescInput(e.target.value)} style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '8px', background: '#34495E', color: 'white' }} />
+          <button onClick={addExpense} style={{ width: '100%', padding: '12px', background: '#D4AF37', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>ADD EXPENSE</button>
+        </div>
+
+        {/* Table */}
+        <div style={{ background: '#2C3E50', padding: '20px', borderRadius: '15px', overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #34495E', color: '#85929E' }}>
+                <th style={{ textAlign: 'left', padding: '10px' }}>Date</th>
+                <th style={{ textAlign: 'left', padding: '10px' }}>Desc</th>
+                <th style={{ textAlign: 'right', padding: '10px' }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.map((exp, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #34495E' }}>
+                  <td style={{ padding: '10px' }}>{exp.date}</td>
+                  <td style={{ padding: '10px' }}>{exp.dsc} <br/><small style={{color: '#3498DB'}}>{exp.cat}</small></td>
+                  <td style={{ padding: '10px', textAlign: 'right', color: '#E74C3C' }}>-{exp.amt.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <footer style={{ textAlign: 'center', marginTop: '20px', paddingBottom: '20px' }}>
+          <p style={{ color: '#85929E', fontSize: '0.8rem' }}>POWERED BY SOMA</p>
+        </footer>
+      </div>
+    </div>
+  )
+}
